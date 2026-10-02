@@ -1,3 +1,4 @@
+import {historyRows} from '@/lib/market-request';
 import {database} from '@/lib/database';
 import {normalize,gaps,INSTRUMENTS} from '@/lib/replay';
 export async function GET(request:Request){try{
@@ -8,11 +9,7 @@ export async function GET(request:Request){try{
  if(stored){const data=JSON.parse(stored.payload);return Response.json({...data,cached:true},{headers:{'Cache-Control':'private, max-age=31536000, immutable'}});}
  let after=end*1000;const raw:string[][]=[];
  for(let page=0;page<6;page++){
-  let body:{code:string;msg?:string;data:string[][]}|undefined;
-  for(let attempt=0;attempt<3;attempt++){
-   try{const url=new URL('https://www.okx.com/api/v5/market/history-candles');url.search=new URLSearchParams({instId:instrument,bar:'1m',limit:'300',after:String(after)}).toString();const response=await fetch(url,{signal:AbortSignal.timeout(15000)});if(!response.ok)throw new Error('行情源暂时不可用');body=await response.json();if(body?.code==='0')break;throw new Error(body?.msg||'行情请求受限');}catch(error){if(attempt===2)throw error;await new Promise(r=>setTimeout(r,500*(attempt+1)));}
-  }
-  const rows=body?.data||[];if(!rows.length)break;raw.push(...rows);const oldest=Math.min(...rows.map(r=>Number(r[0])));if(oldest<=start*1000)break;if(oldest>=after)throw new Error('行情分页未推进');after=oldest;await new Promise(r=>setTimeout(r,120));
+  const rows=await historyRows({instId:instrument,bar:'1m',limit:'300',after:String(after)});if(!rows.length)break;raw.push(...rows);const oldest=Math.min(...rows.map(r=>Number(r[0])));if(oldest<=start*1000)break;if(oldest>=after)throw new Error('行情分页未推进');after=oldest;await new Promise(r=>setTimeout(r,120));
  }
  const candles=normalize(raw,start,end),missing=gaps(candles,start,end);if(!candles.length)return Response.json({error:'这一天没有可用行情，请更换日期。'},{status:404});
  const data={source:'OKX',instrument,bar:'1m',day,candles,missing,fetchedAt:new Date().toISOString(),cached:false};
