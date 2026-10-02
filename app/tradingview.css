@@ -14,3 +14,5 @@ body,.workspace,.chart-shell{background:#fff;color:#131722}.workspace{min-height
 
 .marketbar>.brand{padding-right:12px;border-right:1px solid var(--border);flex-shrink:0}.marketbar{min-height:48px}.desk{flex:1}.toast{bottom:24px}.load-progress{bottom:24px}.floating-drawing-toolbar{top:145px}
 @media(max-width:600px){.marketbar>.brand{display:none}.floating-drawing-toolbar{top:170px}}
+
+.chart-attribution{font-size:12px;color:#787b86;white-space:nowrap;margin-left:auto;order:10}.marketbar .periods{flex:1}@media(max-width:1000px){.chart-attribution{font-size:10px}}@media(max-width:600px){.chart-attribution{font-size:10px;order:2;margin-left:auto}}
