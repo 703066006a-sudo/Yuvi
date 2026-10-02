@@ -11,3 +11,6 @@ body,.workspace,.chart-shell{background:#fff;color:#131722}.workspace{min-height
 .marketbar .random-market{position:static;flex-shrink:0;height:32px!important;padding:0 12px;font-size:13px;white-space:nowrap}
 .chart-manager{width:min(560px,calc(100vw - 32px));max-height:85dvh;overflow:auto}.chart-manager .panel-tabs{padding:5px 0}.chart-manager .panel-section{padding:12px 0}.chart-manager .object-edit input[type=datetime-local]{width:220px}
 @media(max-width:600px){.marketbar .random-market{font-size:12px;padding:0 8px}.chart-manager .object-edit input[type=datetime-local]{width:180px}}
+
+.marketbar>.brand{padding-right:12px;border-right:1px solid var(--border);flex-shrink:0}.marketbar{min-height:48px}.desk{flex:1}.toast{bottom:24px}.load-progress{bottom:24px}.floating-drawing-toolbar{top:145px}
+@media(max-width:600px){.marketbar>.brand{display:none}.floating-drawing-toolbar{top:170px}}
