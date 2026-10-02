@@ -1,0 +1,11 @@
+import assert from 'node:assert/strict';
+import {test} from 'node:test';
+import {aggregate,average,gaps,normalize,type Candle} from '../lib/replay.ts';
+const origin=Date.parse('2026-09-01T10:00:00Z')/1000;
+const source:Candle[]=Array.from({length:120},(_,i)=>({time:origin+i*60,open:100+i,high:102+i,low:99+i,close:101+i,volume:10}));
+test('小时线不能看到回放时间之后的高低收',()=>{const bars=aggregate(source,60,origin+23*60);assert.equal(bars.length,1);assert.deepEqual(bars[0],{time:origin,open:100,high:124,low:99,close:123,volume:230});});
+test('同一时刻切换周期时最后价格一致',()=>{for(const n of [1,5,15,30,60,240,1440])assert.equal(aggregate(source,n,origin+23*60).at(-1)?.close,123);});
+test('恰好到分钟开盘时间时不使用该分钟的收盘价',()=>{assert.equal(aggregate(source,1,origin+60).length,1);assert.equal(aggregate(source,1,origin).length,0);});
+test('后退重算的指标与仅加载过去数据一致',()=>{const end=origin+80*60;const a=aggregate(source,1,end),b=aggregate(source.slice(0,80),1,end);assert.deepEqual(average(a,20),average(b,20));assert.deepEqual(average(a,50,true),average(b,50,true));});
+test('缺失数据保持缺失，并计入边界缺口',()=>{assert.equal(gaps(source.slice(1,119),origin,origin+120*60),2);const trimmed=source.filter((_,i)=>i!==60);assert.equal(gaps(trimmed,origin,origin+120*60),1);assert.equal(aggregate(trimmed,1,origin+120*60).length,119);});
+test('行情去重、升序、过滤未收盘，并拒绝异常价格',()=>{const row=(t:number,confirm='1')=>[String(t*1000),'100','102','99','101','2','200','200',confirm];const rows=[row(origin+60),row(origin),row(origin),row(origin+120,'0')];assert.deepEqual(normalize(rows,origin,origin+180).map(x=>x.time),[origin,origin+60]);assert.throws(()=>normalize([[String(origin*1000),'100','90','99','101','2','','','1']],origin,origin+60));});
