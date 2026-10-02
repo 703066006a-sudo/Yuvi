@@ -14,7 +14,16 @@ import {prefetchLeadSeconds,contiguousDays} from '@/lib/replay-buffer';
 import {aggregate,PERIODS,INSTRUMENTS,fmtTime,type Candle} from '@/lib/replay';
 import type {Drawing,Session} from '@/lib/session-schema';
 import type {TradeFill} from '@/lib/okx';
-const toolsList=[{key:'cursor',label:'选择 / 拖动',icon:MousePointer2},{key:'long-position',label:'多头仓位',icon:TrendingUp},{key:'short-position',label:'空头仓位',icon:TrendingDown},{key:'horizontal',label:'水平线',icon:Minus},{key:'ray',label:'水平射线',icon:ArrowRight},{key:'trend',label:'趋势线',icon:TrendingUp},{key:'channel',label:'平行通道',icon:Layers},{key:'fib',label:'斐波那契回撤',icon:ListFilter},{key:'rect',label:'矩形',icon:Square},{key:'text',label:'文字',icon:Type}] as const;
+type DrawingIconProps=React.SVGProps<SVGSVGElement>;
+function DrawingIcon({children,...props}:DrawingIconProps){return <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true" {...props}>{children}</svg>}
+function TrendToolIcon(props:DrawingIconProps){return <DrawingIcon {...props}><path d="M5 19L19 5"/><circle cx="4" cy="20" r="2" fill="var(--background)"/><circle cx="20" cy="4" r="2" fill="var(--background)"/></DrawingIcon>}
+function HorizontalToolIcon(props:DrawingIconProps){return <DrawingIcon {...props}><path d="M2 12h8m4 0h8"/><circle cx="12" cy="12" r="2" fill="var(--background)"/></DrawingIcon>}
+function RayToolIcon(props:DrawingIconProps){return <DrawingIcon {...props}><path d="M6 12h16"/><circle cx="4" cy="12" r="2" fill="var(--background)"/></DrawingIcon>}
+function ChannelToolIcon(props:DrawingIconProps){return <DrawingIcon {...props}><path d="M5 16L17 4M9 22L21 10"/><circle cx="4" cy="17" r="2" fill="var(--background)"/><circle cx="18" cy="3" r="2" fill="var(--background)"/><circle cx="16" cy="15" r="2" fill="var(--background)"/></DrawingIcon>}
+function PositionToolIcon({short=false,...props}:DrawingIconProps&{short?:boolean}){return <DrawingIcon {...props}><path d="M5 4h17M2 17h20M5 22h17"/><circle cx="3" cy="4" r="2" fill="var(--background)"/><circle cx="3" cy="22" r="2" fill="var(--background)"/>{short?<path d="M14 8h-3a2 2 0 0 0 0 4h1a2 2 0 0 1 0 4H9"/>:<path d="M10 8v6h4"/>}</DrawingIcon>}
+function LongToolIcon(props:DrawingIconProps){return <PositionToolIcon {...props}/>}
+function ShortToolIcon(props:DrawingIconProps){return <PositionToolIcon {...props} short/>}
+const toolsList=[{key:'cursor',label:'选择 / 拖动',icon:MousePointer2},{key:'long-position',label:'多头仓位',icon:LongToolIcon},{key:'short-position',label:'空头仓位',icon:ShortToolIcon},{key:'horizontal',label:'水平线',icon:HorizontalToolIcon},{key:'ray',label:'水平射线',icon:RayToolIcon},{key:'trend',label:'趋势线',icon:TrendToolIcon},{key:'channel',label:'平行通道',icon:ChannelToolIcon},{key:'fib',label:'斐波那契回撤',icon:ListFilter},{key:'rect',label:'矩形',icon:Square},{key:'text',label:'文字',icon:Type}] as const;
 const yesterday=()=>new Date(Date.now()-86400000).toISOString().slice(0,10);
 const HISTORY_DAYS=30;
 const randomDay=()=>{const start=Date.parse('2021-01-31T00:00:00Z'),finish=Date.parse(yesterday()+'T00:00:00Z'),time=start+Math.floor(Math.random()*Math.max(1,finish-start));return new Date(time).toISOString().slice(0,10);};
