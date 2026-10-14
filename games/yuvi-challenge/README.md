@@ -1,6 +1,6 @@
 # 挑战 YUVI
 
-原创单人 Boss 挑战网页 Demo。直接用浏览器打开 dist/index.html 即可游玩，无依赖。
+原创单人 Boss 挑战网页 Demo。直接用浏览器打开 index.html 即可游玩，无依赖。
 
 ## 操作
 
@@ -17,5 +17,5 @@ Yuvi 18000 生命；玩家 560 生命，一次生命。Boss 在 65% 和 30% 血�
 
 ## 文件
 
-- dist/index.html：页面与界面
-- dist/game.js：战斗、技能、AI、绘制
+- index.html：页面与界面
+- game.js：战斗、技能、AI、绘制
